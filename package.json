@@ -1,0 +1,77 @@
+{
+  "name": "superpowers-vscode",
+  "displayName": "Superpowers for Copilot Chat",
+  "description": "Bring Superpowers skills (brainstorming, TDD, debugging, and more) to GitHub Copilot Chat in VS Code.",
+  "version": "1.0.0",
+  "publisher": "dwaintr",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DwainTR/superpowers-vscode"
+  },
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": ["AI", "Other"],
+  "keywords": ["copilot", "superpowers", "skills", "tdd", "brainstorming", "debugging"],
+  "icon": "images/icon.png",
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "chatParticipants": [
+      {
+        "id": "dwaintr.superpowers",
+        "name": "superpowers",
+        "fullName": "Superpowers",
+        "description": "Invoke Superpowers skills in Copilot Chat. Use /brainstorming, /tdd, /debug and more.",
+        "isSticky": false,
+        "commands": [
+          { "name": "brainstorming", "description": "Design and spec a feature through collaborative dialogue before writing code" },
+          { "name": "tdd", "description": "Implement a feature using Test-Driven Development" },
+          { "name": "debug", "description": "Systematically debug a bug or unexpected behavior" },
+          { "name": "plan", "description": "Write a comprehensive implementation plan from a spec" },
+          { "name": "execute", "description": "Execute a written implementation plan step by step" },
+          { "name": "subagent", "description": "Break work into independent tasks and run them with subagents" },
+          { "name": "parallel", "description": "Dispatch 2+ independent tasks in parallel" },
+          { "name": "review", "description": "Prepare code for review — checklist before submitting" },
+          { "name": "receive-review", "description": "Process incoming code review feedback rigorously" },
+          { "name": "verify", "description": "Verify work is complete before claiming done — evidence before assertions" },
+          { "name": "worktree", "description": "Set up an isolated git worktree for feature work" },
+          { "name": "finish", "description": "Complete a development branch — merge, PR, or cleanup options" },
+          { "name": "write-skill", "description": "Create a new Superpowers skill" },
+          { "name": "superpowers", "description": "Learn how to find and use Superpowers skills effectively" }
+        ]
+      }
+    ],
+    "configuration": {
+      "title": "Superpowers",
+      "properties": {
+        "superpowers.customSkillsPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to a directory containing custom SKILL.md files. Leave empty to use the default (~/.copilot/skills/superpowers/). Set to 'disabled' to turn off custom skills."
+        },
+        "superpowers.enableCustomSkills": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to load custom skills from the local filesystem in addition to bundled skills."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.0.0",
+    "typescript": "^5.0.0"
+  }
+}
