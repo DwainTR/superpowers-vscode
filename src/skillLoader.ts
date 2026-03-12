@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import matter from 'gray-matter';
 import { Skill, SkillMap } from './types';
 
 const OUTPUT_CHANNEL_NAME = 'Superpowers';
@@ -16,32 +15,36 @@ function log(message: string): void {
 }
 
 /** Parse a SKILL.md file. Returns null and logs a warning on failure. */
-function parseSkillFile(filePath: string, source: 'bundled' | 'custom'): Skill | null {
-  let raw: string;
-  try {
-    raw = fs.readFileSync(filePath, 'utf-8');
-  } catch (e) {
-    log(`WARNING: Could not read file ${filePath}: ${String(e)}`);
-    return null;
-  }
+function parseFrontmatter(raw: string): { data: Record<string, string>; content: string } {
+     const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+     if (!match) { return { data: {}, content: raw }; }
+     const data: Record<string, string> = {};
+     for (const line of match[1].split('\n')) {
+       const colonIdx = line.indexOf(':');
+       if (colonIdx === -1) { continue; }
+       const key = line.slice(0, colonIdx).trim();
+       let value = line.slice(colonIdx + 1).trim();
+       if (/^["']/.test(value) && value.length > 1) { value = value.slice(1, value.endsWith('"') || value.endsWith("'") ? -1 :
+  value.length); }
+       if (key) { data[key] = value; }
+     }
+     return { data, content: match[2].trim() };
+   }
 
-  let parsed: matter.GrayMatterFile<string>;
-  try {
-    parsed = matter(raw);
-  } catch (e) {
-    log(`WARNING: Could not parse frontmatter in ${filePath}: ${String(e)}`);
-    return null;
-  }
-
-  const { name, description } = parsed.data as Record<string, string>;
-  if (!name || !description) {
-    log(`WARNING: Missing required frontmatter fields (name, description) in ${filePath} — skipping`);
-    return null;
-  }
-
-  return { name, description, content: parsed.content.trim(), source };
-}
-
+   function parseSkillFile(filePath: string, source: 'bundled' | 'custom'): Skill | null {
+     let raw: string;
+     try { raw = fs.readFileSync(filePath, 'utf-8'); } catch (e) {
+       log(`WARNING: Could not read file ${filePath}: ${String(e)}`);
+       return null;
+     }
+     const { data, content } = parseFrontmatter(raw);
+     const { name, description } = data;
+     if (!name || !description) {
+       log(`WARNING: Missing required frontmatter (name, description) in ${filePath} — skipping`);
+       return null;
+     }
+     return { name, description, content, source };
+   }
 /** Resolve the custom skills directory path (cross-platform). */
 function resolveCustomPath(configuredPath: string): string {
   if (configuredPath && configuredPath !== '') {

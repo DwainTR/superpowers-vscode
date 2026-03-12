@@ -15,7 +15,7 @@
   "categories": ["AI", "Other"],
   "keywords": ["copilot", "superpowers", "skills", "tdd", "brainstorming", "debugging"],
   "icon": "images/icon.png",
-  "activationEvents": [],
+  "activationEvents": ["onStartupFinished"],
   "main": "./out/extension.js",
   "contributes": {
     "chatParticipants": [
@@ -64,9 +64,6 @@
     "watch": "tsc -watch -p ./",
     "package": "vsce package",
     "publish": "vsce publish"
-  },
-  "dependencies": {
-    "gray-matter": "^4.0.3"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
